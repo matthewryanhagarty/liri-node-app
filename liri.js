@@ -1,7 +1,7 @@
 require("dotenv").config();
 var keys = require("./keys.js");
-var spotify = new Spotify(keys.spotify);
 var Spotify = require('node-spotify-api');
+var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 var moment = require("moment");
 
@@ -79,7 +79,7 @@ function spotifyThisSong() {
     spotify.search({
         type: "track", query: spotifySong })
         .then(function(response) {
-            console.log(response)
+            console.log(response.tracks.items[0])
         })
     }
 }
