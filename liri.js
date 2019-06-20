@@ -1,8 +1,8 @@
 require("dotenv").config();
-// var keys = require("./keys.js");
-// var spotify = new Spotify(keys.spotify);
+var keys = require("./keys.js");
+var spotify = new Spotify(keys.spotify);
+var Spotify = require('node-spotify-api');
 var axios = require("axios");
-// var inquirer = require("inquirer");
 var moment = require("moment");
 
 
@@ -11,6 +11,7 @@ var action = process.argv[2];
 var movieName = "";
 var artistName = "";
 var userInput = process.argv;
+var spotifySong = "";
 
 
 if (action ===  "movie-this") {
@@ -19,6 +20,10 @@ if (action ===  "movie-this") {
 
 if (action === "concert-this") {
     concertThis();
+}
+
+if (action === "spotify-this-song"){
+    spotifyThisSong();
 }
 
 function movieThis() {
@@ -57,18 +62,24 @@ function concertThis() {
     axios.get(queryUrl).then(
         function(response) {
             // console.log(response);
-            console.log("Next Venue: " + response.data[0].venue.name + "\nLocation: " + response.data[0].venue.city + ", " + response.data[0].venue.region + "\nDate: " + moment(response.data[0].venue.datetime).format("LL"));
+            console.log("Next Venue: " + response.data[0].venue.name + "\nLocation: " + response.data[0].venue.city + "\nDate: " + moment(response.data[0].venue.datetime).format("LL"));
         }
     )
-
-
 }
 
+function spotifyThisSong() {
 
-// inquirer.prompt([
-//     {
-//         type: "input",
-//         name: "movie",
-//         message: "Provide me with a movie,  my friend."
-//     }
-// ])
+    for (var i = 3; i < userInput.length; i++) {
+        if (i > 3 && i < userInput.length) {
+             spotifySong = spotifySong + "+" + userInput[i];
+        } else {
+            spotifySong += userInput[i];
+        }
+
+    spotify.search({
+        type: "track", query: spotifySong })
+        .then(function(response) {
+            console.log(response)
+        })
+    }
+}
