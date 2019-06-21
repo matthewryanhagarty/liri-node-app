@@ -4,6 +4,7 @@ var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 var moment = require("moment");
+var fs = require("fs");
 
 
 var action = process.argv[2];
@@ -26,14 +27,17 @@ if (action === "spotify-this-song"){
     spotifyThisSong();
 }
 
+if (action === "do-what-it-says") {
+    doWhatItSays();
+}
+
 function movieThis() {
-    
+    if (!userInput[3]) {
+        userInput[3] = "Mr. Nobody";
+      }
     for (var i = 3; i < userInput.length; i++) {
         if (i > 3 && i < userInput.length) {
             movieName = movieName + "+" + userInput[i];
-        } else if 
-        (userInput[i] === "") {
-            movieName === "Mr. Nobody";
         } else {
             movieName += userInput[i];
         }
@@ -43,12 +47,13 @@ function movieThis() {
     axios.get(queryUrl).then(
         function(response) {
             // console.log(response);
-            console.log("Movie Name: " + response.data.Title + "\nYear of Release: " + response.data.Year + "\nIMDB Rating: " + response.data.imdbRating + "\nRotten Tomatoes Rating: " + response.data.Ratings[1] + "\nProduced in: " + response.data.Country + "\nLanguage: " + response.data.Language + "\nPlot: " + response.data.Plot + "\nActors: " + response.data.Actors)
+            console.log("Movie Name: " ,response.data.Title, "\nYear of Release: " , response.data.Year , "\nIMDB Rating: " , response.data.imdbRating , "\nRotten Tomatoes Rating: " , response.data.Ratings[1] , "\nProduced in: " , response.data.Country , "\nLanguage: " , response.data.Language , "\nPlot: " , response.data.Plot , "\nActors: " , response.data.Actors)
         }
     )
 }
 
 function concertThis() {
+    
     for (var i = 3; i < userInput.length; i++) {
         if (i > 3 && i < userInput.length) {
              artistName = artistName + "+" + userInput[i];
@@ -69,17 +74,36 @@ function concertThis() {
 
 function spotifyThisSong() {
 
-    for (var i = 3; i < userInput.length; i++) {
-        if (i > 3 && i < userInput.length) {
-             spotifySong = spotifySong + "+" + userInput[i];
-        } else {
-            spotifySong += userInput[i];
-        }
 
-    spotify.search({
-        type: "track", query: spotifySong })
-        .then(function(response) {
-            console.log(response.tracks.items[0])
-        })
+    if (!userInput[3]) {
+        userInput[3] = "the sign ace of base";
+      }
+
+      var spotifySong = process.argv.slice(3).join(" ");
+
+    spotify
+    .search({ type: 'track', query: spotifySong })
+    .then(function(response) {
+      console.log(response.tracks.items[0].artists[0].name);
+      console.log(response.tracks.items[0].name)
+      console.log(response.tracks.items[0].artists[0].external_urls.spotify)
+      console.log(response.tracks.items[0].album.name)
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+}
+
+function doWhatItSays() {
+
+fs.readFile("random.txt", "utf8", function(error, data){
+    if (error) {
+        return console.log(error);
     }
+    var doIt = data.split(",")
+
+    console.log(doIt)
+
+})
+
 }
